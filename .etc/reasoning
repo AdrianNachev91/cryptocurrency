@@ -1,0 +1,28 @@
+The way I solved this was by caching data for only 2 days. Any rate that has been cached and is older than 2 days the
+application deletes. This also leads to the assumption that after 2 days each currency will only have 2 rate values.
+one from the previous day and ne from when the task is executed.
+
+The data structure I use can be seen in AppBundle\Entity. For the user table I assumed in the application that
+there was just one user, since I only need to calculate the balance there.
+
+In Util folder is the abstract class that can be used for API call to the litebit API.
+
+Services folder contains 2 methods. cleanAndSaveCurrencies saves the new data from an API call, sellAndBuy deals with
+the logic for currencies to be bought and sold
+
+I have simplified the logic, in the sense that whenever a coin is bought it iwll always be one coin. This can be
+improved and be more intelligent, by creating so kind of function, between previous transactions, balance in the
+account, getting results from more than 2 days etc...
+
+And whenever a coin is sold, it is the whole coin.
+
+I also have some fixtures to initiate data in DataFixtures and migration file to initiate the database in
+DoctrineMigrations.
+
+I have only saved rates that are cryptocurrency to euro.
+
+All the logic is initiated when the command crypt:calculate-currency. It calls the 2 methods one after the other.
+The 1st method called is cleanAndSaveCurrencies so that we can have the most recent and clean data.
+
+It is assumed that this command is set up as a scheduled task and tun once per day at the same time. This can later
+be modified to be executed once per hour and have a more precise account on the rise and down of currencies.
